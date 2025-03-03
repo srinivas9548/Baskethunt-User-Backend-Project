@@ -1,0 +1,22 @@
+POST http://localhost:3000/users/
+Content-Type: application/json
+
+{
+    "name": "srinivas",
+    "username": "srinu",
+    "password": "srinu@2022",
+    "gender": "Male",
+    "location": "kakinada"
+}
+
+###
+
+POST http://localhost:3000/login/
+Content-Type: application/json
+
+{
+    "username": "srinu",
+    "password": "srinu@2022"
+}
+
+###
