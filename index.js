@@ -67,7 +67,7 @@ app.post("/users/", async (request, response) => {
         if (err) {
           response.status(500).send("Database error");
         } else if (dbUser) {
-          response.status(400).send("User already exists");
+          response.status(400).json({ error: "User already exists" });
         } else {
           const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -79,7 +79,7 @@ app.post("/users/", async (request, response) => {
               if (err) {
                 response.status(500).send("Error creating user");
               } else {
-                response.send("User created successfully");
+                response.json({ message: "User created successfully" });
               }
             }
           );
@@ -97,24 +97,22 @@ app.post("/login/", (request, response) => {
   const { username, password } = request.body;
 
   db.get(
-    `SELECT * FROM user WHERE username = ?`,
-    [username],
-    async (err, dbUser) => {
+    `SELECT * FROM user WHERE username = ?`, [username], async (err, dbUser) => {
       if (err) {
         response.status(500).send("Database error");
       } else if (!dbUser) {
-        response.status(400).send("Invalid User");
+        response.status(400).json({ error: "Invalid User" });
       } else {
         const isPasswordMatched = await bcrypt.compare(
           password,
           dbUser.password
         );
         if (isPasswordMatched) {
-          const payload = { username: username };
+          const payload = { username: username, password: password };
           const jwtToken = jwt.sign(payload, "userKey");
-          response.send({ jwtToken });
+          response.json({ jwtToken });
         } else {
-          response.status(400).send("Invalid Password");
+          response.status(400).json({ error: "Invalid Password" });
         }
       }
     }
