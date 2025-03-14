@@ -95,7 +95,7 @@ app.post("/login/", (request, response) => {
   const { username, password } = request.body;
 
   if (!username || !password) {
-    return response.status(400).json({ error_msg: "Username and password is invalid" });
+    return response.status(400).json({ error_msg: "Username or password is invalid" });
   }
 
   db.get(
