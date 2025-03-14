@@ -61,9 +61,7 @@ app.post("/users/", async (request, response) => {
     const { username, name, password, gender, location } = request.body;
 
     db.get(
-      `SELECT * FROM user WHERE username = ?`,
-      [username],
-      async (err, dbUser) => {
+      `SELECT * FROM user WHERE username = ?`, [username], async (err, dbUser) => {
         if (err) {
           response.status(500).send("Database error");
         } else if (dbUser) {
@@ -96,12 +94,24 @@ app.post("/users/", async (request, response) => {
 app.post("/login/", (request, response) => {
   const { username, password } = request.body;
 
+  if (!username && !password) {
+    response.status(400).json({error_msg: "Username and password are required"});
+  }
+
+  if (!username) {
+    response.status(400).json({error_msg: "Username is required"});
+  }
+
+  if (!password) {
+    response.status(400).json({error_msg: "Password is required"});
+  }
+
   db.get(
     `SELECT * FROM user WHERE username = ?`, [username], async (err, dbUser) => {
       if (err) {
         response.status(500).send("Database error");
       } else if (!dbUser) {
-        response.status(400).json({ error: "Invalid User" });
+        response.status(400).json({ error_msg: "Invalid Username" });
       } else {
         const isPasswordMatched = await bcrypt.compare(
           password,
@@ -112,7 +122,7 @@ app.post("/login/", (request, response) => {
           const jwtToken = jwt.sign(payload, "userKey");
           response.json({ jwtToken });
         } else {
-          response.status(400).json({ error: "Invalid Password" });
+          response.status(400).json({ error_msg: "Username and password didn't match" });
         }
       }
     }
