@@ -94,16 +94,8 @@ app.post("/users/", async (request, response) => {
 app.post("/login/", (request, response) => {
   const { username, password } = request.body;
 
-  if (!username && !password) {
-    response.status(400).json({error_msg: "Username and password are required"});
-  }
-
-  if (!username) {
-    response.status(400).json({error_msg: "Username is required"});
-  }
-
-  if (!password) {
-    response.status(400).json({error_msg: "Password is required"});
+  if (!username || !password) {
+    return response.status(400).json({ error_msg: "Username and password is invalid" });
   }
 
   db.get(
